@@ -1,0 +1,107 @@
+body {
+	font-family: sans-serif;
+	background: #bbb;
+}
+
+#app {
+	margin: 0 auto;
+	max-width: 30rem;
+}
+
+.clock {
+	margin: 0 auto;
+	width: 7rem;
+	height: 7rem;
+	display: flex;
+	background: #aaa;
+	align-items: center;
+}
+
+.clock>span {
+	width: 100%;
+	text-align: center;
+}
+
+.tile-row, .main-button-row {
+	display: flex;
+	background: #ddd;
+	padding: 1rem;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.main-button-row>button {
+	flex: 1 1 auto;
+	max-width: 6rem;
+	line-height: 2rem;
+	align-items: center;
+}
+
+#target {
+	text-align: center;
+	padding: 0.5rem;
+	font-size: 1.5rem;
+	line-height: 3rem;
+	max-width: 3rem;
+	background: #fff;
+	flex: 1 0 auto;
+}
+
+.tiles {
+	flex: 1 1 auto;
+	display: flex;
+	padding: 0;
+	margin-left: 1rem;
+}
+
+.tile {
+	background: #fff;
+	flex: 1 1 auto;
+	width: 2rem;
+	line-height: 2rem;
+	padding: 0.5rem;
+	text-align: center;
+	margin: 0 0.2rem;
+}
+
+.tile, #solution-list>li {
+	list-style-type: none;
+}
+
+.solution-controls {
+	display: flex;
+	background: #ddd;
+	padding: 1rem;
+	align-items: center;
+}
+
+.solution-controls>* {
+	flex: 1 1 auto;
+	justify-content: space-between;
+}
+
+.solution-controls>*:last-child {
+	text-align:right
+}
+
+.solutions {
+	background: #eee;
+}
+
+.solution-list-scroller {
+	overflow-y: scroll;
+	max-height: 20rem;
+}
+
+#solution-list {
+	padding-bottom: 1rem;
+	column-count: 2;
+}
+
+#solution-list li {
+	line-height: 1.6rem;
+}
+
+.hidden {
+	display: none;
+}

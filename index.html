@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Numbers solver</title>
+	<meta name="description" content="Countdown numbers round solver">
+	<meta name="author" content="brdrcol">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="app">
+		<div class="clock"><span>&lt;animated clock&gt;</span></div>
+		<div class="tile-row">
+			<span id="target"></span>
+			<ul class="tiles">
+				<li class="tile" id="num1"></li>
+				<li class="tile" id="num2"></li>
+				<li class="tile" id="num3"></li>
+				<li class="tile" id="num4"></li>
+				<li class="tile" id="num5"></li>
+				<li class="tile" id="num6"></li>
+			</ul>
+		</div>
+		<div class="main-button-row">
+			<button id="add-big">Pick big</button>
+			<button id="add-small">Pick small</button>
+			<button id="start">Start</button>
+		</div>
+		<section class="solutions">
+			<div class="solution-controls">
+				<a href="#show" id="show-solutions">Show xxx solutions</a>
+				<span><a href="#reset" id="clear">Reset</a></span>
+			</div>
+			<div class="solution-list-scroller">
+				<ul id="solution-list" class="hidden"></ul>
+			</div>
+		</section>
+	</div>
+	<script src="web.js"></script>
+	<script src="solver.js"></script>
+</body>
+</html>
