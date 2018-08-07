@@ -4,7 +4,7 @@ try {
 	if (typeof module !== 'undefined') module.exports = Solver // CommonJS require()
 		else window.Solver = Solver // <script src="">
 } catch (ex) {
-	console.log('Web worker') // Web Workers importScripts()
+	// Web Workers importScripts()
 }
 
 function Solver() {
