@@ -27,7 +27,7 @@ const numWorkers = 4
 const solutionMode = 'start2'
 const error = console.error
 let bigs, smalls, target, solver
-let numbers = [], solutions = []
+let numbers = [], solutions = {}, lastTarget = null
 
 let busyWorkers, startTime, endTime
 
@@ -49,10 +49,15 @@ function clearUi() {
 	bigs = shuffle([25, 50, 75, 100])
 	smalls = shuffle([1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9])
 	target = null
-	ui.target.textContent = '???'
+	lastTarget = null
+	ui.target.value = '???'
 	numbers = []
-	solutions = []
-	ui.nums.forEach(el => el.textContent = '?')
+	ui.nums.forEach(el => el.value = '?')
+	clearSolutions()
+}
+
+function clearSolutions() {
+	solutions = {}
 	ui.showSolutions.textContent = '...'
 	ui.solutions.className = 'hidden'
 	while (ui.solutions.firstChild) {
@@ -81,7 +86,7 @@ function handleDone() {
 		endTime = Date.now()
 		console.log(`Solving took ${endTime - startTime}ms`)
 		workers.forEach(w => w.postMessage('reset'))
-		ui.showSolutions.textContent = `Show ${solutions.length} solutions`
+		ui.showSolutions.textContent = `Show ${Object.keys(solutions).length} solutions`
 	}
 }
 
@@ -102,23 +107,26 @@ function start() {
 	if (numbers.length < 6) {
 		return error(`Choose six numbers before starting the round`)
 	}
-	if (solver) {
-		setTarget()
-		startTime = Date.now()
-		/* Generate initial nodes */
-		let nodes = solver.solve(target, numbers, handleSolution, numWorkers)
-		let nodesPerWorker = Math.ceil(nodes.length / numWorkers)
-		busyWorkers = numWorkers
-		for (let i = 0; i < numWorkers; i++) {
-			// Feed each worker a different slice of the seed nodes
-			let a = i*nodesPerWorker
-			let b = Math.min(a+nodesPerWorker, nodes.length)
-			let nodeSlice = nodes.slice(a, b)
-			workers[i].postMessage({target, numbers: nodeSlice})
-			workers[i].postMessage(solutionMode)
-		}
-	} else {
+	if (!solver) {
 		return error(`Solving script hasn't loaded`)
+	}
+	clearSolutions()
+	setTarget()
+	if (!target) {
+		return
+	}
+	startTime = Date.now()
+	/* Generate initial nodes */
+	let nodes = solver.solve(target, numbers, handleSolution, numWorkers)
+	let nodesPerWorker = Math.ceil(nodes.length / numWorkers)
+	busyWorkers = numWorkers
+	for (let i = 0; i < numWorkers; i++) {
+		// Feed each worker a different slice of the seed nodes
+		let a = i*nodesPerWorker
+		let b = Math.min(a+nodesPerWorker, nodes.length)
+		let nodeSlice = nodes.slice(a, b)
+		workers[i].postMessage({target, numbers: nodeSlice})
+		workers[i].postMessage(solutionMode)
 	}
 }
 
@@ -136,7 +144,7 @@ function addBig() {
 		return error(`Only 6 numbers may be selected. Start the round.`)
 	}
 	let big = bigs.shift()
-	ui.nums[numbers.length].textContent = big
+	ui.nums[numbers.length].value = big
 	numbers.push(big)
 }
 
@@ -146,24 +154,38 @@ function addSmall() {
 		return error(`Only 6 numbers may be selected. Start the round.`)
 	}
 	let small = smalls.shift()
-	ui.nums[numbers.length].textContent = small
+	ui.nums[numbers.length].value = small
 	numbers.push(small)
 }
 
 function setTarget() {
-	/* Choose a random three digit number as the target */
-	target = Math.floor(Math.random()*900)+100
-	ui.target.textContent = target
+	/* Either choose a target or use the altered target */
+	let current = parseInt(ui.target.value) || null
+	
+	if (!current || current === lastTarget) {
+		// Generate a new target
+		target = Math.floor(Math.random()*900)+100
+		ui.target.value = target
+	} else {
+		// Solve the user's game
+		target = current
+		ui.target.value = target
+	}
+	lastTarget = target
 }
 
 function handleSolution(node) {
 	/* Append solution to the UI list */
 	let sol = expressionSolution(node)
 	// sol = `${sol} = ${eval(sol)}`
-	const newSol = document.createElement('li')
-	newSol.textContent = sol
-	ui.solutions.appendChild(newSol)
-	solutions.push(sol)
+	// Only show solutions with  a unique final step
+	const key = [node.parents[0].value, node.parents[1].value].sort().join(node.op)
+	if (!solutions[key]){
+		solutions[key] = sol
+		const newSol = document.createElement('li')
+		newSol.textContent = sol
+		ui.solutions.appendChild(newSol)
+	}
 }
 
 function expressionSolution(solution) {
