@@ -27,7 +27,7 @@ const numWorkers = 4
 const solutionMode = 'start2'
 const error = console.error
 let bigs, smalls, target, solver
-let numbers = [], solutions = {}, lastTarget = null
+let numbers = [], solutions = {}, lastTarget = null, lastNumbers = ''
 
 let busyWorkers, startTime, endTime
 
@@ -104,6 +104,7 @@ function shuffle(arr) {
 
 function start() {
 	/* Choose target number, generate solutions*/
+	numbers = ui.nums.map(e => parseInt(e.value))
 	if (numbers.length < 6) {
 		return error(`Choose six numbers before starting the round`)
 	}
@@ -111,7 +112,11 @@ function start() {
 		return error(`Solving script hasn't loaded`)
 	}
 	clearSolutions()
-	setTarget()
+	const newNumbers = numbers.join(',')
+	if (!lastTarget || newNumbers === lastNumbers) {
+		setTarget()
+	}
+	lastNumbers = newNumbers
 	if (!target) {
 		return
 	}
